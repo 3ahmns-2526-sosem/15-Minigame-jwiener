@@ -32,7 +32,17 @@ public class ButtonSpawner : MonoBehaviour
         RectTransform rt = b.GetComponent<RectTransform>();
 
         rt.anchoredPosition = GetRandomPos();
+
+        b.onClick.AddListener(() => OnButtonClicked(b));
+
         count++;
+    }
+
+    void OnButtonClicked(Button b)
+    {
+        b.onClick.RemoveAllListeners();
+        Destroy(b.gameObject);
+        count--;
     }
 
     Vector2 GetRandomPos()
