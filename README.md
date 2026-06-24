@@ -61,7 +61,8 @@ The AI helped speed up development and provided working code examples for Unity 
 
 ## 🖼️ Screenshot
 
-![Gameplay Screenshot](screenshots/gameplay.png)
+<img width="1063" height="605" alt="Screenshot" src="https://github.com/user-attachments/assets/f77819a7-fe2d-458e-8e66-a40a49c0343c" />
+
 
 ---
 
