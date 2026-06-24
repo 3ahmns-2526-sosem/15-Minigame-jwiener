@@ -4,34 +4,48 @@ using TMPro;
 
 public class ButtonSpawner : MonoBehaviour
 {
+    [Header("Setup")]
     public RectTransform canvas;
     public Button buttonPrefab;
 
+    [Header("UI")]
     public TMP_Text scoreText;
+    public GameObject winText;
+    public GameObject loseText;
 
+    [Header("Game Settings")]
     public float interval = 1f;
     public int maxButtons = 10;
+
+    public float buttonLifetime = 3f;
+    public int winScore = 10;
 
     float timer;
     int count;
     int score;
 
+    bool gameEnded;
+
     void Start()
     {
         UpdateScoreUI();
+
+        winText.SetActive(false);
+        loseText.SetActive(false);
     }
 
     void Update()
     {
+        if (gameEnded) return;
+
         timer += Time.deltaTime;
 
         if (timer >= interval)
         {
             timer = 0f;
 
-            if (count >= maxButtons) return;
-
-            SpawnButton();
+            if (count < maxButtons)
+                SpawnButton();
         }
     }
 
@@ -42,20 +56,60 @@ public class ButtonSpawner : MonoBehaviour
 
         rt.anchoredPosition = GetRandomPos();
 
-        b.onClick.AddListener(() => OnButtonClicked(b));
-
         count++;
+
+        bool clicked = false;
+
+        b.onClick.AddListener(() =>
+        {
+            if (gameEnded) return;
+
+            clicked = true;
+
+            b.onClick.RemoveAllListeners();
+            Destroy(b.gameObject);
+
+            count--;
+
+            score++;
+            UpdateScoreUI();
+
+            if (score >= winScore)
+                EndGame(true);
+        });
+
+        // Lifetime check
+        StartCoroutine(ButtonLifetime(b, () =>
+        {
+            if (gameEnded) return;
+
+            if (!clicked)
+            {
+                EndGame(false);
+            }
+        }));
     }
 
-    void OnButtonClicked(Button b)
+    System.Collections.IEnumerator ButtonLifetime(Button b, System.Action onExpire)
     {
-        b.onClick.RemoveAllListeners();
-        Destroy(b.gameObject);
+        yield return new WaitForSeconds(buttonLifetime);
 
-        count--;
-        score++;
+        if (b != null)
+        {
+            Destroy(b.gameObject);
+            count--;
+            onExpire?.Invoke();
+        }
+    }
 
-        UpdateScoreUI();
+    void EndGame(bool won)
+    {
+        if (gameEnded) return;
+
+        gameEnded = true;
+
+        winText.SetActive(won);
+        loseText.SetActive(!won);
     }
 
     void UpdateScoreUI()
