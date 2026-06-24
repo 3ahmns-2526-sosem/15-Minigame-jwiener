@@ -1,16 +1,25 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ButtonSpawner : MonoBehaviour
 {
     public RectTransform canvas;
     public Button buttonPrefab;
 
+    public TMP_Text scoreText;
+
     public float interval = 1f;
     public int maxButtons = 10;
 
     float timer;
     int count;
+    int score;
+
+    void Start()
+    {
+        UpdateScoreUI();
+    }
 
     void Update()
     {
@@ -42,7 +51,16 @@ public class ButtonSpawner : MonoBehaviour
     {
         b.onClick.RemoveAllListeners();
         Destroy(b.gameObject);
+
         count--;
+        score++;
+
+        UpdateScoreUI();
+    }
+
+    void UpdateScoreUI()
+    {
+        scoreText.text = "Score: " + score;
     }
 
     Vector2 GetRandomPos()
